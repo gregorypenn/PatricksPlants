@@ -1,0 +1,22 @@
+Package: PatricksPlants
+Title: Tools for Patrick Alexander's Plant Observation Data
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Gregory",
+           family = "Penn",
+           role = c("aut", "cre"),
+           email = "gregory@crediblecorvid.com")
+    person(given = "Patrick",
+           family = "Alexander",
+           role = c("fld"),
+           email = "patrick@polyploid.net")
+Description: Provides Patrick Alexander's georeferenced plant observation data 
+    at his photo data points as a single dataframe coding presence only. Data
+    may be transformed to presence-absence on a per-species basis with supplied
+    function. Other convenience functions are provided for summarizing and
+    visualizing the data. Also provides tools for importing new data from Patrick's
+    Excel spreadsheet.
+License: What license it uses
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/gregorypenn/PatricksPlants
