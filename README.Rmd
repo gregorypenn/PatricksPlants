@@ -20,6 +20,10 @@ knitr::opts_chunk$set(
 
 The goal of PatricksPlants is to make Patrick Alexander's plant occurance observations more accessible for analysis. A data frame is provided with all observations and metadata coded as presence-only. Presence-absence data may reasonably be infered from this and a function is provided to do so on a per-species basis.
 
+## Package Status
+
+The package is not yet functional.
+
 ## Installation
 
 <!-- You can install the released version of PatricksPlants from [CRAN](https://CRAN.R-project.org) with: -->
@@ -28,7 +32,7 @@ The goal of PatricksPlants is to make Patrick Alexander's plant occurance observ
 <!-- install.packages("PatricksPlants") -->
 <!-- ``` -->
 
-You can install the development version of PatricksPlants from GitHub with:
+You ~~can~~ _will be able to_ install the development version of PatricksPlants from GitHub with:
 
 ``` r
 install.packages("devtools")
@@ -40,7 +44,7 @@ devtools::install_github("gregorypenn/PatricksPlants")
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-library(PatricksPlants)
+# library(PatricksPlants)
 ## basic example code
 ```
 
