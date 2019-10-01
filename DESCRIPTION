@@ -21,7 +21,8 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/gregorypenn/PatricksPlants
 Imports: 
-    dplyr
+    dplyr,
+    tidyr
 Suggests: 
     ggplot2,
     readxl
