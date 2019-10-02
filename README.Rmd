@@ -35,7 +35,7 @@ A function is provided for reading Patrick's xlsx file, in which he records his 
 <!-- install.packages("PatricksPlants") -->
 <!-- ``` -->
 
-You ~~can~~ _will be able to_ install the development version of PatricksPlants from GitHub with:
+You can install the development version of PatricksPlants from GitHub with:
 
 ``` r
 install.packages("devtools")

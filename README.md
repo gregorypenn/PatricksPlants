@@ -35,8 +35,8 @@ dataset.
 
 <!-- ``` -->
 
-You ~~can~~ *will be able to* install the development version of
-PatricksPlants from GitHub with:
+You can install the development version of PatricksPlants from GitHub
+with:
 
 ``` r
 install.packages("devtools")
