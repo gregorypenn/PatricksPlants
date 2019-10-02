@@ -11,9 +11,6 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
-library(dplyr)
-library(ggplot2)
-library(ggmap)
 ```
 
 # PatricksPlants
@@ -29,12 +26,6 @@ A function is provided for reading Patrick's xlsx file, in which he records his 
 
 ## Installation
 
-<!-- You can install the released version of PatricksPlants from [CRAN](https://CRAN.R-project.org) with: -->
-
-<!-- ``` r -->
-<!-- install.packages("PatricksPlants") -->
-<!-- ``` -->
-
 You can install the development version of PatricksPlants from GitHub with:
 
 ``` r
@@ -42,37 +33,85 @@ install.packages("devtools")
 devtools::install_github("gregorypenn/PatricksPlants")
 ```
 
+These two lines of code will download and install Patrick's Plants and all its dependencies.
+
+## Package Status
+
+This package is in early development. So far it contains little more than a dataset, a function for importing a new dataset from an xlsx file, and a function for creating presence-absence data for individual species. If you'd like to collaborate with development, file bug reports, or request features, please familiarize yourself with [Github's issue tracker](https://guides.github.com/features/issues/). I'm just learning about it myself and it's a pretty cool tool.
+
+#### Bugs
+There may be bugs. Please [file an issue](https://github.com/gregorypenn/PatricksPlants/issues) if you find one. 
+
+#### Feature Requests
+[File an issue](https://github.com/gregorypenn/PatricksPlants/issues) to request a new feature. Preface the issue title with "Feature request:" and provide a detailed description of how you'd like it to work. Most features will be implemented as functions, so start by describing the inputs and outputs you'd like, then any options you'd like it to have.
+
 ## Examples
 
-Here are the locations in the dataset.
+_Note on packages and_ `library`: Packages required to run the examples are included in the example code. If you run something like `library(ggplot2)` and get an error message, "there is no package called 'gplot2'" then you need to install the package using `install.packages("ggplot2")`. Gotcha: package names are quoted for `install.packages`, but not for `library`. Also, you only need to attach a package with `library(package)` once per R session. That code appears repeatedly on this page to make each chunck of R code in the examples indepently reprodicible.
 
-```{r example, message=FALSE}
+### Mapping
+
+Gotcha: Stamen basemaps do not require any registration or payment, but Google now requires a credit card to access their mapping API. They do have a free usage tier that I have not yet exceeded. For instructions on setting up the Google API with R, run `?ggmap::register_google`.
+
+#### Point Locations
+
+Maps can be generated for longitude-latitude point locations, as with presence-only data.
+```{r patricks-places, message=FALSE}
 library(PatricksPlants)
-library(ggplot2)
+library(ggmap)
 
-qmplot(longitude, latitude, 
-       data = patricks_plants)
+map_points(patricks_plants) +
+  ggtitle("Patrick's Places")
 ```
 
-What's the distribution of species richness across surveys in units of species per 100 m^2?
-```{r}
+#### Presence-Absence Data
+
+Presence-absence data differ from point location data in having the attribute _presence_: TRUE or FALSE. The presence attribute is mapped to the color of points.
+```{r presence-absence, message=FALSE}
+boer4 <- presence_absence("BOER4")
+map_presence_absence(boer4)
+```
+
+### Plotting
+What's the distribution of species counts across survey sites with 10m radius?
+```{r dist, message=FALSE}
+library(PatricksPlants)
 library(dplyr)
-species_richness <- patricks_plants %>%
+library(ggplot2)
+
+species_10m <- patricks_plants %>%
+  filter(area_approx == "10m radius") %>%
   group_by(survey_id) %>%
-  summarize(n = n(),
-            area = mean(area),
-            density = n() / mean(area))
+  summarize(species = n())
 
-ggplot(species_richness, aes(x = density * 100)) +
-  geom_histogram() +
-  theme_bw() +
-  xlab("Species per 100 m^2")
-
+ggplot(species_10m, aes(x = species)) +
+  geom_histogram(binwidth = 1) +
+  theme_bw()
 ```
 
 How many survey sites had *Bouteloua eriopoda*, and how many didn't?
 ```{r}
 BOER4 <- presence_absence("BOER4", patricks_plants)
 table(BOER4$presence)
+```
+
+#### Modeling
+
+Does biodiversity decrease with latitude? Patrick finds about 1 fewer species for every 2 degrees north that he wanders (see estimate and confidence interval in model summary below). Of course, the southern end of his range does happen to be a biodiversity hotspot. The plot clearly shows that Patrick needs to spend more time up north; notice the wider confidence interval at higher latitudes.
+```{r}
+species_counts <- patricks_plants %>%
+  filter(area_approx == "10m radius") %>%
+  select(survey_id, latitude) %>%
+  group_by(survey_id) %>%
+  summarize(species = n(),
+            latitude = mean(latitude))
+
+ggplot(species_counts, aes(x = latitude, y = species)) + 
+  geom_point() +
+  geom_smooth(method = "lm")
+
+model <- lm(species ~ latitude, data = species_counts)
+summary(model)
+confint(model)
 ```
 <!-- Don't forget to commit and push figure files, so they display on GitHub! -->

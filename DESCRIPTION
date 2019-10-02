@@ -22,8 +22,9 @@ LazyData: true
 URL: https://github.com/gregorypenn/PatricksPlants
 Imports: 
     dplyr,
-    tidyr
+    tidyr,
+    ggmap,
+    ggplot2
 Suggests: 
-    ggplot2,
     readxl
 RoxygenNote: 6.1.1
