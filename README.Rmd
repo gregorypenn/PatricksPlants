@@ -35,7 +35,7 @@ A function is provided for reading Patrick's xlsx file, in which he records his 
 <!-- install.packages("PatricksPlants") -->
 <!-- ``` -->
 
-You ~~can~~ _will be able to_ install the development version of PatricksPlants from GitHub with:
+You can install the development version of PatricksPlants from GitHub with:
 
 ``` r
 install.packages("devtools")
@@ -54,16 +54,19 @@ qmplot(longitude, latitude,
        data = patricks_plants)
 ```
 
-What's the distribution of species counts across surveys?
+What's the distribution of species richness across surveys in units of species per 100 m^2?
 ```{r}
+library(dplyr)
 species_richness <- patricks_plants %>%
-  filter(area_approx == "10m radius") %>%
   group_by(survey_id) %>%
-  summarize(plants = n())
+  summarize(n = n(),
+            area = mean(area),
+            density = n() / mean(area))
 
-ggplot(species_richness, aes(x = plants)) +
-  geom_histogram(binwidth = 1) +
-  theme_bw()
+ggplot(species_richness, aes(x = density * 100)) +
+  geom_histogram() +
+  theme_bw() +
+  xlab("Species per 100 m^2")
 
 ```
 

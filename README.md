@@ -35,8 +35,8 @@ dataset.
 
 <!-- ``` -->
 
-You ~~can~~ *will be able to* install the development version of
-PatricksPlants from GitHub with:
+You can install the development version of PatricksPlants from GitHub
+with:
 
 ``` r
 install.packages("devtools")
@@ -57,17 +57,23 @@ qmplot(longitude, latitude,
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
-What’s the distribution of species counts across surveys?
+What’s the distribution of species richness across surveys in units of
+species per 100 m^2?
 
 ``` r
+library(dplyr)
 species_richness <- patricks_plants %>%
-  filter(area_approx == "10m radius") %>%
   group_by(survey_id) %>%
-  summarize(plants = n())
+  summarize(n = n(),
+            area = mean(area),
+            density = n() / mean(area))
 
-ggplot(species_richness, aes(x = plants)) +
-  geom_histogram(binwidth = 1) +
-  theme_bw()
+ggplot(species_richness, aes(x = density * 100)) +
+  geom_histogram() +
+  theme_bw() +
+  xlab("Species per 100 m^2")
+#> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+#> Warning: Removed 5 rows containing non-finite values (stat_bin).
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
@@ -76,7 +82,7 @@ How many survey sites had *Bouteloua eriopoda*, and how many didn’t?
 
 ``` r
 BOER4 <- presence_absence("BOER4", patricks_plants)
-#> Joining, by = c("survey_id", "project", "allotment", "site", "date", "date_verbatim", "photographed", "area_approx", "latitude", "longitude", "elevation", "elevation_verbatim", "state", "county", "site_descriptions_and_comments", "ecological_site", "ecological_site_code", "herbicide_treatment_verbatim", "herbicide_treatment_year", "year", "herbicide_treated", "years_since_treatment", "LCDO_binary", "exclude_from_analyses", "statedirectory", "countydirectory", "exportmarker", "NSD", "NSD_comments", "image_1", "image_2", "image_3", "image_4", "image_5", "image_6", "image_7")
+#> Joining, by = c("survey_id", "project", "allotment", "site", "date", "date_verbatim", "photographed", "area_approx", "latitude", "longitude", "elevation", "elevation_verbatim", "state", "county", "site_descriptions_and_comments", "ecological_site", "ecological_site_code", "herbicide_treatment_verbatim", "herbicide_treatment_year", "year", "herbicide_treated", "years_since_treatment", "LCDO_binary", "exclude_from_analyses", "statedirectory", "countydirectory", "exportmarker", "NSD", "NSD_comments", "image_1", "image_2", "image_3", "image_4", "image_5", "image_6", "image_7", "area")
 table(BOER4$presence)
 #> 
 #> FALSE  TRUE 
