@@ -79,7 +79,8 @@ read_patricks_xlsx <- function (path, coding = "presence-only") {
            year = as.integer(year),
            herbicide_treated = as.logical(herbicide_treated),
            LCDO_binary = as.integer(LCDO_binary),
-           exclude_from_analyses = as.logical(exclude_from_analyses))
+           exclude_from_analyses = as.logical(exclude_from_analyses),
+           area = parse_area(area_approx))
 
   # Todo: create and add unique site_id
 
