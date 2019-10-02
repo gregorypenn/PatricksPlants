@@ -9,7 +9,7 @@ Authors@R:
       person(given = "Patrick",
            family = "Alexander",
            role = "fld",
-           email = "patrick@polyploid.net"))
+           email = "paalexan@polyploid.net"))
 Description: Provides Patrick Alexander's georeferenced plant observation data 
     at his photo data points as a single dataframe coded presence-only. Data
     may be transformed to presence-absence on a per-species basis with supplied
