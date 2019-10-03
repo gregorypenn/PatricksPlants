@@ -89,16 +89,13 @@ ggplot(species_10m, aes(x = species)) +
   theme_bw()
 ```
 
-How many survey sites had *Bouteloua eriopoda*, and how many didn't?
-```{r}
-BOER4 <- presence_absence("BOER4", patricks_plants)
-table(BOER4$presence)
-```
-
 #### Modeling
 
 Does biodiversity decrease with latitude? Patrick finds about 1 fewer species for every 2 degrees north that he wanders (see estimate and confidence interval in model summary below). Of course, the southern end of his range does happen to be a biodiversity hotspot. The plot clearly shows that Patrick needs to spend more time up north; notice the wider confidence interval at higher latitudes.
 ```{r}
+library(dplyr)
+library(ggplot2)
+
 species_counts <- patricks_plants %>%
   filter(area_approx == "10m radius") %>%
   select(survey_id, latitude) %>%

@@ -130,17 +130,6 @@ ggplot(species_10m, aes(x = species)) +
 
 <img src="man/figures/README-dist-1.png" width="100%" />
 
-How many survey sites had *Bouteloua eriopoda*, and how many didn’t?
-
-``` r
-BOER4 <- presence_absence("BOER4", patricks_plants)
-#> Joining, by = c("survey_id", "project", "allotment", "site", "date", "date_verbatim", "photographed", "area_approx", "latitude", "longitude", "elevation", "elevation_verbatim", "state", "county", "site_descriptions_and_comments", "ecological_site", "ecological_site_code", "herbicide_treatment_verbatim", "herbicide_treatment_year", "year", "herbicide_treated", "years_since_treatment", "LCDO_binary", "exclude_from_analyses", "statedirectory", "countydirectory", "exportmarker", "NSD", "NSD_comments", "image_1", "image_2", "image_3", "image_4", "image_5", "image_6", "image_7", "area")
-table(BOER4$presence)
-#> 
-#> FALSE  TRUE 
-#>  3979  1082
-```
-
 #### Modeling
 
 Does biodiversity decrease with latitude? Patrick finds about 1 fewer
@@ -151,6 +140,9 @@ shows that Patrick needs to spend more time up north; notice the wider
 confidence interval at higher latitudes.
 
 ``` r
+library(dplyr)
+library(ggplot2)
+
 species_counts <- patricks_plants %>%
   filter(area_approx == "10m radius") %>%
   select(survey_id, latitude) %>%
@@ -163,7 +155,7 @@ ggplot(species_counts, aes(x = latitude, y = species)) +
   geom_smooth(method = "lm")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 ``` r
 
