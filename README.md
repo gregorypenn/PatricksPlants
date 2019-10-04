@@ -63,15 +63,116 @@ inputs and outputs you’d like, then any options you’d like it to have.
 
 ## Examples
 
+The examples in this section illustrate possible use cases with the
+data. If there’s something you’d like to do that isn’t include here and
+you can’t figure it out, let me know with a feature request and I’ll try
+to help. If the task is simple, I’ll just add an example here. If it’s
+more complex, I’ll simplify it for the user by providing new functions
+that automate some tasks.
+
+The blocks of code in this section are independently reproducible. Any
+block, pasted into a fresh R session should produce the expected
+results, provided you have the required packages installed. More on that
+below.
+
 *Note on packages and* `library`: Packages required to run the examples
 are included in the example code. If you run something like
 `library(ggplot2)` and get an error message, “there is no package called
-‘gplot2’” then you need to install the package using
+‘gplot2’”, then you need to install the package using
 `install.packages("ggplot2")`. Gotcha: package names are quoted for
 `install.packages`, but not for `library`. Also, you only need to attach
-a package with `library(package)` once per R session. That code appears
-repeatedly on this page to make each chunck of R code in the examples
-indepently reprodicible.
+a package with `library(package)` once per R session. That code is
+repeated for each block on this page in order to make the blocks
+independently reproducible.
+
+### Summarizing
+
+Summarizing is the task of aggragating information across categories.
+For example, we may wish to summarize the set of plants that occur at a
+set of sites. After specifying the sites, we’ll get
+
+  - The union set of plants across the sites
+  - The distribution of species across sites
+
+<!-- end list -->
+
+``` r
+library(PatricksPlants)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+
+# Some random sites
+sites <- c(
+"rough cr 1",
+"buckhorn 3",
+"hardcastle canyon 3",
+"wood cyn 3",
+"yeso hills 7")
+
+plants_surveyed <- patricks_plants %>%
+    filter(site %in% sites) %>%       # filter works on rows
+    select(survey_id, plant_id) %>%   # select works on columns
+    return(.)
+
+# To see all records use print(plants_at_sites, n = nrow(plants_at_sites))
+plants_surveyed
+#> # A tibble: 89 x 2
+#>    survey_id plant_id
+#>        <int> <fct>   
+#>  1      1908 ATEL    
+#>  2      1908 GUDE    
+#>  3      2030 RHMI3   
+#>  4      3169 LONEP   
+#>  5       873 CYLE6   
+#>  6      3169 MUILL   
+#>  7      1407 NOTE    
+#>  8      1407 YUELE   
+#>  9      2030 YUELE   
+#> 10      3169 YUELE   
+#> # … with 79 more rows
+
+# Summarize species records by the proportion of sites where they occur
+prop <- plants_surveyed %>%
+  group_by(plant_id) %>%
+  summarize(prop_sites = n() / length(unique(plants_surveyed$survey_id))) %>%
+  arrange(desc(prop_sites))
+
+prop
+#> # A tibble: 76 x 2
+#>    plant_id prop_sites
+#>    <fct>         <dbl>
+#>  1 YUELE           0.6
+#>  2 ARAD            0.4
+#>  3 ARPU9           0.4
+#>  4 ASAL6           0.4
+#>  5 BOER4           0.4
+#>  6 EPTR            0.4
+#>  7 GUSA2           0.4
+#>  8 ISTE2           0.4
+#>  9 OPMA8           0.4
+#> 10 SOEL            0.4
+#> # … with 66 more rows
+
+# Further summarize by proportion of species at proportion of sites
+prop_x_prop <- prop %>%
+  group_by(prop_sites) %>%
+  summarize(prop_species = n() / length(prop$plant_id))
+
+prop_x_prop
+#> # A tibble: 3 x 2
+#>   prop_sites prop_species
+#>        <dbl>        <dbl>
+#> 1        0.2       0.842 
+#> 2        0.4       0.145 
+#> 3        0.6       0.0132
+```
 
 ### Mapping
 
@@ -155,7 +256,7 @@ ggplot(species_counts, aes(x = latitude, y = species)) +
   geom_smooth(method = "lm")
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ``` r
 
