@@ -60,25 +60,39 @@ Summarizing is the task of aggragating information across categories. For exampl
 - The union set of plants across the sites
 - The distribution of species across sites
 
-```{r}
+Two methods for selecting sites are given below: a set determined by allotment, and an arbitrarily specified set we'll call `site_names`. The code for the arbitrary list is commented out, so it won't run unless uncommented.
+
+```{r, message=FALSE}
 library(PatricksPlants)
 library(dplyr)
+library(ggplot2)
 
-# Some random sites
-sites <- c(
-"rough cr 1",
-"buckhorn 3",
-"hardcastle canyon 3",
-"wood cyn 3",
-"yeso hills 7")
-
+# Filtering data by allotment.
+# The allotment id is quoted because it is coded as a factor
 plants_surveyed <- patricks_plants %>%
-    filter(site %in% sites) %>%       # filter works on rows
-    select(survey_id, plant_id) %>%   # select works on columns
-    return(.)
+  filter(allotment == "03009") %>%  # filter works on rows
+  select(survey_id, plant_id) %>%   # select works on columns
+  return(.)
 
 # To see all records use print(plants_at_sites, n = nrow(plants_at_sites))
 plants_surveyed
+
+# # Uncomment this code to run it instead of filtering by allotment
+# # An arbitrary set of sites
+# site_names <- c(
+# "rough cr 1",
+# "buckhorn 3",
+# "hardcastle canyon 3",
+# "wood cyn 3",
+# "yeso hills 7")
+# 
+# plants_surveyed <- patricks_plants %>%
+#   filter(site %in% site_name) %>%       # filter works on rows
+#   select(survey_id, plant_id) %>%   # select works on columns
+#   return(.)
+# 
+# To see all records use print(plants_at_sites, n = nrow(plants_at_sites))
+# plants_surveyed
 
 # Summarize species records by the proportion of sites where they occur
 prop <- plants_surveyed %>%
@@ -91,9 +105,25 @@ prop
 # Further summarize by proportion of species at proportion of sites
 prop_x_prop <- prop %>%
   group_by(prop_sites) %>%
-  summarize(prop_species = n() / length(prop$plant_id))
+  summarize(prop_species = n() / length(prop$plant_id)) %>%
+  select(prop_species, prop_sites) %>% # selecting in the order for display
+  arrange(desc(prop_species))
 
 prop_x_prop
+
+dist_plot <- ggplot(prop_x_prop, aes(x = prop_species, y = prop_sites)) +
+  geom_point() +
+  xlab("Proportion of Species") +
+  ylab("Proportion of Sites") +
+  ggtitle("Distribution of Species Across Sites")
+
+dist_plot
+
+# You can save the plot to a file by uncommenting the following line.
+# The filetype will be determined by the suffix you provide for the filename.
+# ggsave(filename = "dist_plot.png", plot = dist_plot)
+
+
 ```
 
 ### Mapping
@@ -109,6 +139,20 @@ library(ggmap)
 
 map_points(patricks_plants) +
   ggtitle("Patrick's Places")
+```
+
+We can select the set of points that we want for the map, for example selecting by the allotment used in the example on summarizing. Note that we've specified a `"terrain"` basemap here instead of the default `"toner-lite"`.
+
+```{r, message=FALSE}
+library(dplyr)
+library(ggmap)
+
+sites <- patricks_plants %>%
+  filter(allotment == "03009") %>%
+  select(survey_id, latitude, longitude) %>%
+  distinct() # This removes duplicate rows. There was a row for each plant-site.
+
+map_points(sites, maptype = "terrain")
 ```
 
 #### Presence-Absence Data

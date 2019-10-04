@@ -94,49 +94,56 @@ set of sites. After specifying the sites, we’ll get
   - The union set of plants across the sites
   - The distribution of species across sites
 
-<!-- end list -->
+Two methods for selecting sites are given below: a set determined by
+allotment, and an arbitrarily specified set we’ll call `site_names`. The
+code for the arbitrary list is commented out, so it won’t run unless
+uncommented.
 
 ``` r
 library(PatricksPlants)
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
+library(ggplot2)
 
-# Some random sites
-sites <- c(
-"rough cr 1",
-"buckhorn 3",
-"hardcastle canyon 3",
-"wood cyn 3",
-"yeso hills 7")
-
+# Filtering data by allotment.
+# The allotment id is quoted because it is coded as a factor
 plants_surveyed <- patricks_plants %>%
-    filter(site %in% sites) %>%       # filter works on rows
-    select(survey_id, plant_id) %>%   # select works on columns
-    return(.)
+  filter(allotment == "03009") %>%  # filter works on rows
+  select(survey_id, plant_id) %>%   # select works on columns
+  return(.)
 
 # To see all records use print(plants_at_sites, n = nrow(plants_at_sites))
 plants_surveyed
-#> # A tibble: 89 x 2
+#> # A tibble: 955 x 2
 #>    survey_id plant_id
 #>        <int> <fct>   
-#>  1      1908 ATEL    
-#>  2      1908 GUDE    
-#>  3      2030 RHMI3   
-#>  4      3169 LONEP   
-#>  5       873 CYLE6   
-#>  6      3169 MUILL   
-#>  7      1407 NOTE    
-#>  8      1407 YUELE   
-#>  9      2030 YUELE   
-#> 10      3169 YUELE   
-#> # … with 79 more rows
+#>  1      1395 AMAC    
+#>  2      1522 AMPA    
+#>  3      1523 AMPA    
+#>  4      3830 AMPA    
+#>  5       197 CHENO   
+#>  6       198 CHENO   
+#>  7      3830 CHENO   
+#>  8      3895 KRLA2   
+#>  9      3896 KRLA2   
+#> 10       191 SATR12  
+#> # … with 945 more rows
+
+# # Uncomment this code to run it instead of filtering by allotment
+# # An arbitrary set of sites
+# site_names <- c(
+# "rough cr 1",
+# "buckhorn 3",
+# "hardcastle canyon 3",
+# "wood cyn 3",
+# "yeso hills 7")
+# 
+# plants_surveyed <- patricks_plants %>%
+#   filter(site %in% site_name) %>%       # filter works on rows
+#   select(survey_id, plant_id) %>%   # select works on columns
+#   return(.)
+# 
+# To see all records use print(plants_at_sites, n = nrow(plants_at_sites))
+# plants_surveyed
 
 # Summarize species records by the proportion of sites where they occur
 prop <- plants_surveyed %>%
@@ -145,33 +152,60 @@ prop <- plants_surveyed %>%
   arrange(desc(prop_sites))
 
 prop
-#> # A tibble: 76 x 2
+#> # A tibble: 154 x 2
 #>    plant_id prop_sites
 #>    <fct>         <dbl>
-#>  1 YUELE           0.6
-#>  2 ARAD            0.4
-#>  3 ARPU9           0.4
-#>  4 ASAL6           0.4
-#>  5 BOER4           0.4
-#>  6 EPTR            0.4
-#>  7 GUSA2           0.4
-#>  8 ISTE2           0.4
-#>  9 OPMA8           0.4
-#> 10 SOEL            0.4
-#> # … with 66 more rows
+#>  1 BOBAB3        0.686
+#>  2 DAPU7         0.667
+#>  3 MUPO2         0.588
+#>  4 ACNA2         0.549
+#>  5 LATR2         0.549
+#>  6 BAAB          0.529
+#>  7 PLMU3         0.490
+#>  8 ARAD          0.471
+#>  9 ASNU4         0.431
+#> 10 CRPO5         0.431
+#> # … with 144 more rows
 
 # Further summarize by proportion of species at proportion of sites
 prop_x_prop <- prop %>%
   group_by(prop_sites) %>%
-  summarize(prop_species = n() / length(prop$plant_id))
+  summarize(prop_species = n() / length(prop$plant_id)) %>%
+  select(prop_species, prop_sites) %>% # selecting in the order for display
+  arrange(desc(prop_species))
 
 prop_x_prop
-#> # A tibble: 3 x 2
-#>   prop_sites prop_species
-#>        <dbl>        <dbl>
-#> 1        0.2       0.842 
-#> 2        0.4       0.145 
-#> 3        0.6       0.0132
+#> # A tibble: 24 x 2
+#>    prop_species prop_sites
+#>           <dbl>      <dbl>
+#>  1       0.279      0.0196
+#>  2       0.143      0.0392
+#>  3       0.104      0.0588
+#>  4       0.0974     0.0980
+#>  5       0.0649     0.137 
+#>  6       0.0584     0.118 
+#>  7       0.0325     0.0784
+#>  8       0.0325     0.196 
+#>  9       0.0195     0.157 
+#> 10       0.0195     0.255 
+#> # … with 14 more rows
+
+dist_plot <- ggplot(prop_x_prop, aes(x = prop_species, y = prop_sites)) +
+  geom_point() +
+  xlab("Proportion of Species") +
+  ylab("Proportion of Sites") +
+  ggtitle("Distribution of Species Across Sites")
+
+dist_plot
+```
+
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+``` r
+
+# You can save the plot to a file by uncommenting the following line.
+# The filetype will be determined by the suffix you provide for the filename.
+# ggsave(filename = "dist_plot.png", plot = dist_plot)
 ```
 
 ### Mapping
@@ -195,6 +229,25 @@ map_points(patricks_plants) +
 ```
 
 <img src="man/figures/README-patricks-places-1.png" width="100%" />
+
+We can select the set of points that we want for the map, for example
+selecting by the allotment used in the example on summarizing. Note that
+we’ve specified a `"terrain"` basemap here instead of the default
+`"toner-lite"`.
+
+``` r
+library(dplyr)
+library(ggmap)
+
+sites <- patricks_plants %>%
+  filter(allotment == "03009") %>%
+  select(survey_id, latitude, longitude) %>%
+  distinct() # This removes duplicate rows. There was a row for each plant-site.
+
+map_points(sites, maptype = "terrain")
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 #### Presence-Absence Data
 
@@ -256,7 +309,7 @@ ggplot(species_counts, aes(x = latitude, y = species)) +
   geom_smooth(method = "lm")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ``` r
 
