@@ -8,7 +8,7 @@
 <!-- badges: end -->
 
 The goal of PatricksPlants is to make Patrick Alexander’s plant
-occurance observations more accessible for analysis.
+occurrence observations more accessible for analysis.
 
 A data frame is provided with all observations and metadata coded as
 presence-only. Presence-absence data may reasonably be infered from this
