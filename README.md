@@ -128,6 +128,26 @@ plants_surveyed
 #> 10       191 SATR12  
 #> # … with 945 more rows
 
+# If you want to filter by allotment and return results in a format similar to that of the original excel file, use this:
+# plants_surveyed <- patricks_plants %>%
+#   filter(allotment %in% "01001") %>%  # filter works on rows
+#   select(species, plant_id, common_name, site) %>%   # select works on columns
+#   return(.)
+# sites <- patricks_plants %>%
+#   filter(site %in% plants_surveyed$site) %>%
+#   select(survey_id, site, date, latitude, longitude) %>%
+#   return(.)
+# plants_surveyed <- mutate(plants_surveyed, presence = 1)
+# plants_surveyed <- pivot_wider(
+#   plants_surveyed,
+#   names_from = site,
+#   values_from = presence,
+#   values_fill = list(presence = 0))
+# scols <- 4:ncol(plants_surveyed)
+# plants_surveyed <- mutate(
+#   plants_surveyed,
+#   prop = rowsums(plants_surveyed[scols]) / (ncol(plants_surveyed) - 3))
+
 # # Uncomment this code to run it instead of filtering by allotment
 # # An arbitrary set of sites
 # site_names <- c(
