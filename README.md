@@ -103,6 +103,7 @@ uncommented.
 library(PatricksPlants)
 library(dplyr)
 library(ggplot2)
+library(tidyr)
 
 # Filtering data by allotment.
 # The allotment id is quoted because it is coded as a factor
