@@ -136,6 +136,7 @@ plants_surveyed
 #   return(.)
 # sites <- patricks_plants %>%
 #   filter(site %in% plants_surveyed$site) %>%
+#   distinct(site, .keep_all = TRUE) %>%
 #   select(survey_id, site, date, latitude, longitude) %>%
 #   return(.)
 # plants_surveyed <- mutate(plants_surveyed, presence = 1)
