@@ -95,7 +95,7 @@ plants_surveyed
 # scols <- 4:ncol(plants_surveyed)
 # plants_surveyed <- mutate(
 #   plants_surveyed,
-#   prop = rowsums(plants_surveyed[scols]) / (ncol(plants_surveyed) - 3))
+#   prop = rowSums(plants_surveyed[scols]) / (ncol(plants_surveyed) - 3))
 
 # # Uncomment this code to run it instead of filtering by allotment
 # # An arbitrary set of sites
