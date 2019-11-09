@@ -86,7 +86,7 @@ read_patricks_xlsx <- function (path, coding = "presence-only") {
 
   ##### Create occurance data frame
   occurance <- trimmedsheet[plant_rows,]
-  plants_colnames <- c("family", "species", "usda_code", "plant_id", "common_name", "taxon_notes")
+  plants_colnames <- c("family", "species", "row", "plant_id", "common_name", "taxon_notes")
   names(occurance) <- c(plants_colnames, surveys$survey_id)
 
   occurance <- occurance %>%
@@ -96,7 +96,7 @@ read_patricks_xlsx <- function (path, coding = "presence-only") {
                  values_drop_na = FALSE) %>%
     mutate(family = factor(family),
            species = factor(species),
-           usda_code = factor(usda_code),
+           row = factor(row),
            plant_id = factor(plant_id),
            common_name = factor(common_name),
            survey_id = as.integer(survey_id),
