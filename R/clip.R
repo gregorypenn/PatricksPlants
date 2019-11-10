@@ -29,10 +29,11 @@ getAIMPA <- function(connection){
     mutate(PrimaryKey = as.character(PrimaryKey))
   tblSpecRichDetail <- sqlQuery(connection, 'SELECT SpeciesList, PrimaryKey FROM ilmocAIMPub.ilmocAIMPubDBO.tblSpecRichDetail;') %>%
     mutate(PrimaryKey = as.character(PrimaryKey),
-           SpeciesList = as.character(SpeciesList))
-  tblSpecRichHeader <- sqlQuery(connection, 'SELECT FormDate, SpecRich1Area, PrimaryKey FROM ilmocAIMPub.ilmocAIMPubDBO.tblSpecRichHeader;') %>%
+           SpeciesList = factor(SpeciesList))
+  tblSpecRichHeader <- sqlQuery(connection, 'SELECT FormDate, OBJECTID, SpecRich1Area, PrimaryKey FROM ilmocAIMPub.ilmocAIMPubDBO.tblSpecRichHeader;') %>%
     mutate(PrimaryKey = as.character(PrimaryKey),
-           SpecRich1Area = as.numeric(SpecRich1Area))
+           SpecRich1Area = as.numeric(SpecRich1Area),
+           OBJECTID = as.integer(OBJECTID))
   tblPlots <- sqlQuery(connection, 'SELECT Elevation, PrimaryKey FROM ilmocAIMPub.ilmocAIMPubDBO.tblPlots;') %>%
     mutate(PrimaryKey = as.character(PrimaryKey),
            Elevation = as.numeric(Elevation))
@@ -71,10 +72,17 @@ clip <- function(kind,boundary,input){
   }
 
 #####################################################################################
+#
+# for some reason, taxpath in AIMconv is the only argument in these functions that will not work unless you
+# include the "taxpath ="
+#
+# the smallest value in OBJECTID is 65405 so, unless that changes... conflicts with survey_id values created
+# by read_patricks_xlsx() are very unlikely for the foreseeable future
 
 AIMconv <- function(input,taxpath){
   internal <- input %>% select(-PrimaryKey) %>%
-    mutate(ProjectName = factor(ProjectName),
+    mutate(OBJECTID = as.integer(OBJECTID),
+           ProjectName = factor(ProjectName),
            PlotID = factor(PlotID),
            FormDate = as.Date(FormDate),
            Latitude_NAD83 = as.numeric(Latitude_NAD83),
@@ -85,7 +93,8 @@ AIMconv <- function(input,taxpath){
            County = factor(County),
            SpecRich1Area = as.numeric(SpecRich1Area),
            EcologicalSiteId = factor(EcologicalSiteId)) %>%
-    rename(project = ProjectName,
+    rename(survey_id = OBJECTID,
+           project = ProjectName,
            site = PlotID,
            date = FormDate,
            latitude = Latitude_NAD83,
@@ -162,7 +171,6 @@ create_LCDOtax <- function(taxpath){
 #############################################################################
 #
 # this function exists, instead of just calling bind_rows, for three reasons:
-# to assign survey_id values to rows of AIMPA;
 # to assign FALSE values to rows of AIMPA;
 # because I get a bunch of error messages from bind_rows indicating that columns
 # were coerced from their original data type, and it's easier to just reassign
@@ -173,7 +181,7 @@ create_LCDOtax <- function(taxpath){
 append_AIMPA <- function(PDPs,AIMPA){
   internal <- bind_rows(PDPs,AIMPA)
   internal <- internal %>%
-    mutate(survey_id = 1:nrow(.),
+    mutate(survey_id = as.integer(survey_id),
            project = factor(project),
            allotment = factor(allotment),
            site = factor(site),
