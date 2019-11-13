@@ -1,3 +1,7 @@
+
+# This function assumes that there is an object named "PDPs" that is the output from
+# create_PDPs.R.
+
 allotsum <- function(allotnum){
 
 allotsummary <- PDPs %>%
