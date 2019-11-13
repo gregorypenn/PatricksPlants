@@ -1,3 +1,6 @@
+# The purpose of this script is to take patricks_plants (i.e., output of read_patricks_xlsx.R),
+# convert it to a format similar to the original PDPs excel file, and add habit duration information.
+
 # Importing LCDOtax + creating the lookup table for growth habit and duration:
 
 create_PDPs <- function(path){
