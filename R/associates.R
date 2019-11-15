@@ -8,10 +8,11 @@ library(lubridate)
 library(e1071)
 library(tibble)
 
-associates <- function(input,taxon,elev_buffer=0,horiz_buffer="0",startdate="0",enddate){
+associates <- function(input,taxon,elev_buffer=0,horiz_buffer=0,startdate="0",enddate){
 
 df <- surveys
 alpha <- 0.05
+taxon <- taxon
 
 # example values for arguments...
 
@@ -56,7 +57,7 @@ if (!(startdate=="0")) {
 
 # spatial filter, based on the horizontal buffer in km
 
-if (!(horiz_buffer=="0")) {
+if (!(horiz_buffer==0)) {
   # Convert to spatial data
   taxon.sp <- taxon.df
   coordinates(taxon.sp) <- c("longitude", "latitude")
