@@ -85,7 +85,7 @@ allotsum <- function(allotnum, length="long"){
 
 # and this one summarizes data by plots that had a particular target species (use the code)
 
-associates <- function(code){
+assoctable <- function(code){
   
   # create a vector of site names where the plant is present
   
